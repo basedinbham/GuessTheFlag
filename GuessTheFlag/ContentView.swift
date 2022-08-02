@@ -19,6 +19,8 @@ struct ContentView: View {
     // static let so that when the game is reset all countries are available again
     static let allCountries = ["Estonia", "France", "Germany", "Ireland", "Italy", "Nigeria", "Poland", "Russia", "Spain", "UK", "US"]
     
+    @State private var selectedFlag = -1
+    
     var body: some View {
         ZStack {
             RadialGradient(stops: [
@@ -48,6 +50,12 @@ struct ContentView: View {
                             flagTapped(number)
                         } label: {
                             FlagImage(name: countries[number])
+                                .rotation3DEffect(.degrees(selectedFlag == number ? 360 : 0),
+                                                  axis: (x: 0, y: 1, z: 0))
+                                .opacity(selectedFlag == -1 || selectedFlag == number ? 1 : 0.25)
+                                .scaleEffect(selectedFlag == -1 || selectedFlag == number ? 1 : 0.55)
+                                .saturation(selectedFlag == -1 || selectedFlag == number ? 1 : 0.25)
+                                .animation(.default, value: selectedFlag)
                         }
                     }
                 }
@@ -81,6 +89,8 @@ struct ContentView: View {
     }
     
     func flagTapped(_ number: Int) {
+        selectedFlag = number
+        
         if number == correctAnswer {
             scoreTitle = "Correct"
             score += 1
@@ -111,6 +121,7 @@ struct ContentView: View {
         correctAnswer = Int.random(in: 0...2)
         // as soon as game is reset questionCounter runs adding += 1
         questionCounter += 1
+        selectedFlag = -1
     }
     
     func newGame() {
